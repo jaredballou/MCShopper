@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "id": "shopper",
+  "version": "${version}",
+
+  "name": "Get Shop Signs",
+  "description": "Get shop signs and record them to a JSON file",
+  "authors": [
+    "jballou"
+  ],
+  "contact": {
+    "homepage": "https://jballou.com/",
+    "sources": "https://github.com/jaredballou/MCShopper"
+  },
+
+  "license": "GPL3",
+  "icon": "assets/shopper/icon.png",
+
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "com.jballou.shopper.Shopper"
+    ]
+  },
+
+  "depends": {
+    "fabricloader": ">=0.7.4",
+    "fabric": "*",
+    "minecraft": "1.16.x",
+
+    "fabric-api-base": "*",
+    "fabric-events-lifecycle-v0": "*",
+    "fabric-key-binding-api-v1": "*",
+
+    "fabric-renderer-api-v1": "*"
+  },
+  "suggests": {
+    "flamingo": "*"
+  }
+}
