@@ -3,14 +3,14 @@
   "id": "shopper",
   "version": "${version}",
 
-  "name": "Get Shop Signs",
-  "description": "Get shop signs and record them to a JSON file",
+  "name": "Shopper",
+  "description": "Tools to let players find shops, compare prices, and simplify buying and selling",
   "authors": [
     "jballou"
   ],
   "contact": {
     "homepage": "https://jballou.com/",
-    "sources": "https://github.com/jaredballou/MCShopper"
+    "sources": "https://github.com/jaredballou/shopper"
   },
 
   "license": "GPL3",

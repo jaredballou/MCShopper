@@ -92,7 +92,8 @@ publishing {
 
 task copyJar(type: Copy) {
     from jar
-    into "~/.minecraft/mods"
+    into "${System.properties['user.home']}${File.separator}.minecraft${File.separator}mods"
 }
+
 
 build.dependsOn copyJar
