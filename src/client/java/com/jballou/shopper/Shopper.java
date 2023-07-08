@@ -27,13 +27,14 @@ import com.mojang.brigadier.arguments.*;
 import com.sun.jdi.connect.Connector;
 import net.fabricmc.api.*;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.command.v1.ClientCommandManager;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientBlockEntityEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.*;
-import static net.fabricmc.fabric.api.client.command.v1.ClientCommandManager.*;
+import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.*;
 
 import net.minecraft.block.*;
 import net.minecraft.block.entity.*;
@@ -47,7 +48,7 @@ import net.minecraft.entity.decoration.*;
 import net.minecraft.entity.projectile.*;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.SignType;
+//import net.minecraft.util.SignType;
 import net.minecraft.util.hit.*;
 import net.minecraft.util.math.*;
 import net.minecraft.world.*;
@@ -103,6 +104,28 @@ public class Shopper implements ClientModInitializer {
 				removeSign((SignBlockEntity) blockEntity);
 			}
 		});
+		ClientCommandRegistrationCallback.EVENT.register((dispatcher, access) -> {
+			dispatcher.register(ClientCommandManager.literal("shopper_find_signs").then(
+					ClientCommandManager.argument("radius", DoubleArgumentType.doubleArg(0,2048))
+				).executes(context -> {
+				CheckDatabaseConnection();
+				int ssSize = shopSigns.size();
+				getNearbyBlocks(MinecraftClient.getInstance().player.getBlockPos(), IntegerArgumentType.getInteger(context, "radius"));
+				writeJSON();
+				context.getSource().sendFeedback(new LiteralText(String.format("Processed %d shop signs (%d new) in %d block radius.",shopSigns.size(),(shopSigns.size() - ssSize), context.getArgument("radius", Integer.class))));
+				return 1;
+			})
+			.executes(context -> {
+				CheckDatabaseConnection();
+				int ssSize = shopSigns.size();
+				getNearbyBlocks(MinecraftClient.getInstance().player.getBlockPos(), 256);
+				writeJSON();
+				context.getSource().sendFeedback(new LiteralText(String.format("Processed %d shop signs (%d new) in 256 block radius.",shopSigns.size(),(shopSigns.size() - ssSize))));
+				return 1;
+			})
+			);
+		});
+		/*
 		ClientCommandManager.DISPATCHER.register(
 				literal("shopper_find_signs")
 						.then(
@@ -161,7 +184,7 @@ public class Shopper implements ClientModInitializer {
 										})
 						)
 		);
-
+*/
 	}
 
 	public Integer CheckDatabaseConnection() {
