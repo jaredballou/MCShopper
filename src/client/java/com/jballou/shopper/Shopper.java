@@ -106,23 +106,54 @@ public class Shopper implements ClientModInitializer {
 		});
 		ClientCommandRegistrationCallback.EVENT.register((dispatcher, access) -> {
 			dispatcher.register(ClientCommandManager.literal("shopper_find_signs").then(
-					ClientCommandManager.argument("radius", DoubleArgumentType.doubleArg(0,2048))
-				).executes(context -> {
-				CheckDatabaseConnection();
-				int ssSize = shopSigns.size();
-				getNearbyBlocks(MinecraftClient.getInstance().player.getBlockPos(), IntegerArgumentType.getInteger(context, "radius"));
-				writeJSON();
-				context.getSource().sendFeedback(new LiteralText(String.format("Processed %d shop signs (%d new) in %d block radius.",shopSigns.size(),(shopSigns.size() - ssSize), context.getArgument("radius", Integer.class))));
-				return 1;
+				ClientCommandManager.argument("radius", DoubleArgumentType.doubleArg(0,2048))).executes(context -> {
+					CheckDatabaseConnection();
+					int ssSize = shopSigns.size();
+					getNearbyBlocks(MinecraftClient.getInstance().player.getBlockPos(), IntegerArgumentType.getInteger(context, "radius"));
+					writeJSON();
+					context.getSource().sendFeedback(Text.of(String.format("Processed %d shop signs (%d new) in %d block radius.",shopSigns.size(),(shopSigns.size() - ssSize), context.getArgument("radius", Integer.class))));
+					return 1;
 			})
 			.executes(context -> {
 				CheckDatabaseConnection();
 				int ssSize = shopSigns.size();
-				getNearbyBlocks(MinecraftClient.getInstance().player.getBlockPos(), 256);
+				getNearbyBlocks(MinecraftClient.getInstance().player.getBlockPos(), 512);
 				writeJSON();
-				context.getSource().sendFeedback(new LiteralText(String.format("Processed %d shop signs (%d new) in 256 block radius.",shopSigns.size(),(shopSigns.size() - ssSize))));
+				context.getSource().sendFeedback(Text.of(String.format("Processed %d shop signs (%d new) in 512 block radius.",shopSigns.size(),(shopSigns.size() - ssSize))));
 				return 1;
 			})
+			);
+			dispatcher.register(ClientCommandManager.literal("shopper_find_item").then(
+				ClientCommandManager.argument("itemCode", StringArgumentType.string())).executes(context -> {
+					CheckDatabaseConnection();
+					List<ShopSign> setMatches = shopSigns.entrySet()
+							.stream()
+							.filter(entry -> entry.getValue().itemCode.toLowerCase(Locale.ROOT).contains(StringArgumentType.getString(context, "itemCode").toLowerCase(Locale.ROOT)))
+							.map(Map.Entry::getValue)
+							.sorted(Comparator.comparing(ShopSign::getItemCode))
+							.sorted(Comparator.comparing(ShopSign::getPriceBuyEach))
+							.collect(Collectors.toList());
+	//											List<Person> personList = personSet.stream().sorted((e1, e2) ->
+	//													e1.getName().compareTo(e2.getName())).collect(Collectors.toList());
+					StringBuilder results = new StringBuilder();
+					Iterator<ShopSign> itr = setMatches.iterator();
+					String thisItem = "";
+					while(itr.hasNext()){
+						ShopSign thisSign = itr.next();
+						if (!thisItem.equals(thisSign.itemCode)) {
+							thisItem = thisSign.itemCode;
+							results.append(String.format("---------- %s ----------\n",thisItem));
+						}
+						results.append(String.format("%s (%s) Qty: %d", thisSign.posString,thisSign.sellerName,thisSign.itemQuantity));
+						if (thisSign.canBuy)
+							results.append(String.format(" Buy: %.2f",thisSign.priceBuy));
+						if (thisSign.canSell)
+							results.append(String.format(" Sell: %.2f",thisSign.priceSell));
+						results.append("\n");
+					}
+					context.getSource().sendFeedback(Text.of(String.format("--------------------\nFound %d shops matching query '%s'\n--------------------\n\n%s",setMatches.size(), context.getArgument("itemCode", String.class),results)));
+					return 1;
+				})
 			);
 		});
 		/*
@@ -135,7 +166,7 @@ public class Shopper implements ClientModInitializer {
 											int ssSize = shopSigns.size();
 											getNearbyBlocks(MinecraftClient.getInstance().player.getBlockPos(), IntegerArgumentType.getInteger(context, "radius"));
 											writeJSON();
-											context.getSource().sendFeedback(new LiteralText(String.format("Processed %d shop signs (%d new) in %d block radius.",shopSigns.size(),(shopSigns.size() - ssSize), context.getArgument("radius", Integer.class))));
+											context.getSource().sendFeedback(Text.of(String.format("Processed %d shop signs (%d new) in %d block radius.",shopSigns.size(),(shopSigns.size() - ssSize), context.getArgument("radius", Integer.class))));
 											return 1;
 										})
 						)
@@ -144,7 +175,7 @@ public class Shopper implements ClientModInitializer {
 							int ssSize = shopSigns.size();
 							getNearbyBlocks(MinecraftClient.getInstance().player.getBlockPos(), 256);
 							writeJSON();
-							context.getSource().sendFeedback(new LiteralText(String.format("Processed %d shop signs (%d new) in 256 block radius.",shopSigns.size(),(shopSigns.size() - ssSize))));
+							context.getSource().sendFeedback(Text.of(String.format("Processed %d shop signs (%d new) in 256 block radius.",shopSigns.size(),(shopSigns.size() - ssSize))));
 							return 1;
 						})
 		);
@@ -179,7 +210,7 @@ public class Shopper implements ClientModInitializer {
 													results.append(String.format(" Sell: %.2f",thisSign.priceSell));
 												results.append("\n");
 											}
-											context.getSource().sendFeedback(new LiteralText(String.format("--------------------\nFound %d shops matching query '%s'\n--------------------\n\n%s",setMatches.size(), context.getArgument("itemCode", String.class),results)));
+											context.getSource().sendFeedback(Text.of(String.format("--------------------\nFound %d shops matching query '%s'\n--------------------\n\n%s",setMatches.size(), context.getArgument("itemCode", String.class),results)));
 											return 1;
 										})
 						)
@@ -283,14 +314,13 @@ public class Shopper implements ClientModInitializer {
 	 */
 	public static void parseSign(SignBlockEntity signBlockEntity) {
 		String[] signText = new String[4];
+		SignText signTextObj = signBlockEntity.getFrontText();
+		Text[] signTextText = signBlockEntity.getFrontText().getMessages(false);
 		for (int i=0; i<4; i++) {
-			StringBuilder lineText = new StringBuilder();
-			signBlockEntity.getTextOnRow(i).visit((part) -> {
-					lineText.append(part);
-					return Optional.empty();
-				});
-			signText[i] = lineText.toString();
+			signText[i] = signTextText[i].getString();
 		}
+
+		//Text[] lines = ((SignBlockEntityAccessor)signBlockEntity).getText();
 		ShopSign shopSign = new ShopSign(signBlockEntity.getPos(),signText);
 		if (shopSign.sellerName != "")
 			shopSigns.put(signBlockEntity.getPos().hashCode(), shopSign);

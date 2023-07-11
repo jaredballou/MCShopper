@@ -41,8 +41,7 @@ public class ScanController {
 
     // TODO: extend to a 2x2 grid | 4x4 grid
     return playerLastChunk == null
-        || playerLastChunk.x != player.chunkX
-        || playerLastChunk.z != player.chunkZ;
+        || playerLastChunk != player.getChunkPos();
   }
 
   /**
@@ -68,7 +67,7 @@ public class ScanController {
     }
 
     // Update the players last chunk to eval against above.
-    playerLastChunk = new ChunkPos(client.player.chunkX, client.player.chunkZ);
+    playerLastChunk = client.player.getChunkPos();
     findChunks();
   }
 
@@ -78,8 +77,8 @@ public class ScanController {
       return;
     }
 
-    int cX = player.chunkX;
-    int cZ = player.chunkZ;
+    int cX = player.getChunkPos().x;
+    int cZ = player.getChunkPos().z;
 
     int range = 3 / 2;
     //    int skippedChunks = 0;
