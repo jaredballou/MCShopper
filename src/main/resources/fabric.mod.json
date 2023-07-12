@@ -6,14 +6,15 @@
   "name": "Shopper",
   "description": "Tools to let players find shops, compare prices, and simplify buying and selling",
   "authors": [
-    "jballou"
+    "jballou",
+    "Lafolie"
   ],
   "contact": {
     "homepage": "https://jballou.com/",
     "sources": "https://github.com/jaredballou/shopper"
   },
 
-  "license": "GPL3",
+  "license": "LGPL3",
   "icon": "assets/shopper/icon.png",
 
   "environment": "*",
@@ -24,9 +25,10 @@
   },
 
   "depends": {
-    "fabricloader": ">=0.7.4",
-    "fabric": "*",
-    "minecraft": "1.16.x",
+    "fabricloader": ">=0.14.21",
+    "minecraft": "1.20.1",
+    "java": ">=17",
+    "fabric-api": "*",
 
     "fabric-api-base": "*",
     "fabric-events-lifecycle-v0": "*",
