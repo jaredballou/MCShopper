@@ -20,7 +20,7 @@
   "environment": "*",
   "entrypoints": {
     "client": [
-      "com.jballou.shopper.Shopper"
+      "com.jballou.shopper.ShopperClient"
     ]
   },
 
