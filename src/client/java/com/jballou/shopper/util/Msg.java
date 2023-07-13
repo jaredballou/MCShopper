@@ -20,7 +20,7 @@ public final class Msg
 
 	private static MutableText mkTxt()
 	{
-		return Text.literal("[Shopper]").formatted(Formatting.AQUA);
+		return Text.literal("[Shopper] ").formatted(Formatting.AQUA);
 	}
 
 	public static void info(CommandContext<FabricClientCommandSource> context, String str)
