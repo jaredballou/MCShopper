@@ -61,12 +61,12 @@ public class Db {
         c = null;
     }
     public ResultSet executeQuery(String query) {
-        Shopper.LOGGER.info(String.format("Running query: %s",query));
+        ShopperOld.LOGGER.info(String.format("Running query: %s",query));
         try (Statement stmt = this.c.createStatement()) {
             ResultSet rs = stmt.executeQuery(query);
             return rs;
         } catch (SQLException e) {
-            Shopper.LOGGER.error(e);
+            ShopperOld.LOGGER.error(e);
         }
         return null;
     }

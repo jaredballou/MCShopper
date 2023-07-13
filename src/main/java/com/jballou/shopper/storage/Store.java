@@ -5,13 +5,13 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 import net.minecraft.client.MinecraftClient;
-import com.jballou.shopper.Shopper;
+import com.jballou.shopper.ShopperOld;
 
 import java.io.*;
 import java.lang.reflect.Type;
 
 public abstract class Store<T> {
-  private static final String CONFIG_PATH = String.format("%s/config/%s", MinecraftClient.getInstance().runDirectory, Shopper.MOD_ID);
+  private static final String CONFIG_PATH = String.format("%s/config/%s", MinecraftClient.getInstance().runDirectory, ShopperOld.MOD_ID);
 
   private final String name;
   private final String file;
@@ -25,7 +25,7 @@ public abstract class Store<T> {
 
   public T read() {
     Gson gson = new Gson();
-    Shopper.LOGGER.info(String.format("Reading %s from JSON %s", this.name, this.file));
+    ShopperOld.LOGGER.info(String.format("Reading %s from JSON %s", this.name, this.file));
 
     try {
       try {
@@ -33,7 +33,7 @@ public abstract class Store<T> {
         System.out.println(t);
         return t;
       } catch (JsonIOException | JsonSyntaxException e) {
-        Shopper.LOGGER.fatal("Fatal error with json loading on {}.json", this.name, e);
+        ShopperOld.LOGGER.fatal("Fatal error with json loading on {}.json", this.name, e);
       }
     } catch (FileNotFoundException ignored) {
       // Write a blank version of the file
@@ -46,7 +46,7 @@ public abstract class Store<T> {
   }
 
   public void write() {
-    Shopper.LOGGER.info(String.format("Writing %s to JSON %s", this.name, this.file));
+    ShopperOld.LOGGER.info(String.format("Writing %s to JSON %s", this.name, this.file));
     Gson gson = new GsonBuilder()
         .setPrettyPrinting()
         .create();
@@ -57,7 +57,7 @@ public abstract class Store<T> {
         writer.flush();
       }
     } catch (IOException | JsonIOException e) {
-      Shopper.LOGGER.catching(e);
+      ShopperOld.LOGGER.catching(e);
     }
   }
 

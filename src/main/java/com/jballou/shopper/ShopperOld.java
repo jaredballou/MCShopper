@@ -27,13 +27,11 @@ import com.mojang.brigadier.arguments.*;
 import com.sun.jdi.connect.Connector;
 import net.fabricmc.api.*;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.command.v1.ClientCommandManager;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientBlockEntityEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.*;
-import static net.fabricmc.fabric.api.client.command.v1.ClientCommandManager.*;
 
 import net.minecraft.block.*;
 import net.minecraft.block.entity.*;
@@ -47,7 +45,6 @@ import net.minecraft.entity.decoration.*;
 import net.minecraft.entity.projectile.*;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.SignType;
 import net.minecraft.util.hit.*;
 import net.minecraft.util.math.*;
 import net.minecraft.world.*;
@@ -75,7 +72,7 @@ import org.apache.logging.log4j.LogManager;
  * TODO: Store blocks indexed by world and server, as there is currently only one list which is not great.
  * TODO: allow searching at arbitrary points, allowing updates of shop districts from any location
  */
-public class Shopper implements ClientModInitializer {
+public class ShopperOld implements ClientModInitializer {
 
 	public static final String MOD_ID = "shopper";
 	public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
@@ -93,76 +90,76 @@ public class Shopper implements ClientModInitializer {
 	/**
 	 * Setup code for mod, mostly sets up data structures and commands to do checks.
 	 */
-	public void onInitializeClient() {
-		Stores.reload();
-		SignUpdateCallback.EVENT.register(Shopper::addSign);
-		ClientLifecycleEvents.CLIENT_STOPPING.register(this::gameClosing);
+	public void onInitializeClient() {}
+		// Stores.reload();
+		// SignUpdateCallback.EVENT.register(ShopperOld::addSign);
+		// ClientLifecycleEvents.CLIENT_STOPPING.register(this::gameClosing);
 
-		ClientBlockEntityEvents.BLOCK_ENTITY_UNLOAD.register((blockEntity, world) -> {
-			if (blockEntity instanceof SignBlockEntity) {
-				removeSign((SignBlockEntity) blockEntity);
-			}
-		});
-		ClientCommandManager.DISPATCHER.register(
-				literal("shopper_find_signs")
-						.then(
-								argument("radius", IntegerArgumentType.integer(0,2048))
-										.executes(context -> {
-											CheckDatabaseConnection();
-											int ssSize = shopSigns.size();
-											getNearbyBlocks(MinecraftClient.getInstance().player.getBlockPos(), IntegerArgumentType.getInteger(context, "radius"));
-											writeJSON();
-											context.getSource().sendFeedback(new LiteralText(String.format("Processed %d shop signs (%d new) in %d block radius.",shopSigns.size(),(shopSigns.size() - ssSize), context.getArgument("radius", Integer.class))));
-											return 1;
-										})
-						)
-						.executes(context -> {
-							CheckDatabaseConnection();
-							int ssSize = shopSigns.size();
-							getNearbyBlocks(MinecraftClient.getInstance().player.getBlockPos(), 256);
-							writeJSON();
-							context.getSource().sendFeedback(new LiteralText(String.format("Processed %d shop signs (%d new) in 256 block radius.",shopSigns.size(),(shopSigns.size() - ssSize))));
-							return 1;
-						})
-		);
-		ClientCommandManager.DISPATCHER.register(
-				literal("shopper_find_item")
-						.then(
-								argument("itemCode", StringArgumentType.string())
-										.executes(context -> {
-											CheckDatabaseConnection();
-											List<ShopSign> setMatches = shopSigns.entrySet()
-													.stream()
-													.filter(entry -> entry.getValue().itemCode.toLowerCase(Locale.ROOT).contains(StringArgumentType.getString(context, "itemCode").toLowerCase(Locale.ROOT)))
-													.map(Map.Entry::getValue)
-													.sorted(Comparator.comparing(ShopSign::getItemCode))
-													.sorted(Comparator.comparing(ShopSign::getPriceBuyEach))
-													.collect(Collectors.toList());
-//											List<Person> personList = personSet.stream().sorted((e1, e2) ->
-//													e1.getName().compareTo(e2.getName())).collect(Collectors.toList());
-											StringBuilder results = new StringBuilder();
-											Iterator<ShopSign> itr = setMatches.iterator();
-											String thisItem = "";
-											while(itr.hasNext()){
-												ShopSign thisSign = itr.next();
-												if (!thisItem.equals(thisSign.itemCode)) {
-													thisItem = thisSign.itemCode;
-													results.append(String.format("---------- %s ----------\n",thisItem));
-												}
-												results.append(String.format("%s (%s) Qty: %d", thisSign.posString,thisSign.sellerName,thisSign.itemQuantity));
-												if (thisSign.canBuy)
-													results.append(String.format(" Buy: %.2f",thisSign.priceBuy));
-												if (thisSign.canSell)
-													results.append(String.format(" Sell: %.2f",thisSign.priceSell));
-												results.append("\n");
-											}
-											context.getSource().sendFeedback(new LiteralText(String.format("--------------------\nFound %d shops matching query '%s'\n--------------------\n\n%s",setMatches.size(), context.getArgument("itemCode", String.class),results)));
-											return 1;
-										})
-						)
-		);
+		// ClientBlockEntityEvents.BLOCK_ENTITY_UNLOAD.register((blockEntity, world) -> {
+		// 	if (blockEntity instanceof SignBlockEntity) {
+		// 		removeSign((SignBlockEntity) blockEntity);
+		// 	}
+		// });
+// 		ClientCommandManager.DISPATCHER.register(
+// 				literal("shopper_find_signs")
+// 						.then(
+// 								argument("radius", IntegerArgumentType.integer(0,2048))
+// 										.executes(context -> {
+// 											CheckDatabaseConnection();
+// 											int ssSize = shopSigns.size();
+// 											getNearbyBlocks(MinecraftClient.getInstance().player.getBlockPos(), IntegerArgumentType.getInteger(context, "radius"));
+// 											writeJSON();
+// 											context.getSource().sendFeedback(new LiteralText(String.format("Processed %d shop signs (%d new) in %d block radius.",shopSigns.size(),(shopSigns.size() - ssSize), context.getArgument("radius", Integer.class))));
+// 											return 1;
+// 										})
+// 						)
+// 						.executes(context -> {
+// 							CheckDatabaseConnection();
+// 							int ssSize = shopSigns.size();
+// 							getNearbyBlocks(MinecraftClient.getInstance().player.getBlockPos(), 256);
+// 							writeJSON();
+// 							context.getSource().sendFeedback(new LiteralText(String.format("Processed %d shop signs (%d new) in 256 block radius.",shopSigns.size(),(shopSigns.size() - ssSize))));
+// 							return 1;
+// 						})
+// 		);
+// 		ClientCommandManager.DISPATCHER.register(
+// 				literal("shopper_find_item")
+// 						.then(
+// 								argument("itemCode", StringArgumentType.string())
+// 										.executes(context -> {
+// 											CheckDatabaseConnection();
+// 											List<ShopSign> setMatches = shopSigns.entrySet()
+// 													.stream()
+// 													.filter(entry -> entry.getValue().itemCode.toLowerCase(Locale.ROOT).contains(StringArgumentType.getString(context, "itemCode").toLowerCase(Locale.ROOT)))
+// 													.map(Map.Entry::getValue)
+// 													.sorted(Comparator.comparing(ShopSign::getItemCode))
+// 													.sorted(Comparator.comparing(ShopSign::getPriceBuyEach))
+// 													.collect(Collectors.toList());
+// //											List<Person> personList = personSet.stream().sorted((e1, e2) ->
+// //													e1.getName().compareTo(e2.getName())).collect(Collectors.toList());
+// 											StringBuilder results = new StringBuilder();
+// 											Iterator<ShopSign> itr = setMatches.iterator();
+// 											String thisItem = "";
+// 											while(itr.hasNext()){
+// 												ShopSign thisSign = itr.next();
+// 												if (!thisItem.equals(thisSign.itemCode)) {
+// 													thisItem = thisSign.itemCode;
+// 													results.append(String.format("---------- %s ----------\n",thisItem));
+// 												}
+// 												results.append(String.format("%s (%s) Qty: %d", thisSign.posString,thisSign.sellerName,thisSign.itemQuantity));
+// 												if (thisSign.canBuy)
+// 													results.append(String.format(" Buy: %.2f",thisSign.priceBuy));
+// 												if (thisSign.canSell)
+// 													results.append(String.format(" Sell: %.2f",thisSign.priceSell));
+// 												results.append("\n");
+// 											}
+// 											context.getSource().sendFeedback(new LiteralText(String.format("--------------------\nFound %d shops matching query '%s'\n--------------------\n\n%s",setMatches.size(), context.getArgument("itemCode", String.class),results)));
+// 											return 1;
+// 										})
+// 						)
+// 		);
 
-	}
+	// }
 
 	public Integer CheckDatabaseConnection() {
 		if (serverInfo == null)
@@ -259,18 +256,18 @@ public class Shopper implements ClientModInitializer {
 	 * @param signBlockEntity the entity to process/check
 	 */
 	public static void parseSign(SignBlockEntity signBlockEntity) {
-		String[] signText = new String[4];
-		for (int i=0; i<4; i++) {
-			StringBuilder lineText = new StringBuilder();
-			signBlockEntity.getTextOnRow(i).visit((part) -> {
-					lineText.append(part);
-					return Optional.empty();
-				});
-			signText[i] = lineText.toString();
-		}
-		ShopSign shopSign = new ShopSign(signBlockEntity.getPos(),signText);
-		if (shopSign.sellerName != "")
-			shopSigns.put(signBlockEntity.getPos().hashCode(), shopSign);
+		// String[] signText = new String[4];
+		// for (int i=0; i<4; i++) {
+		// 	StringBuilder lineText = new StringBuilder();
+		// 	signBlockEntity.getTextOnRow(i).visit((part) -> {
+		// 			lineText.append(part);
+		// 			return Optional.empty();
+		// 		});
+		// 	signText[i] = lineText.toString();
+		// }
+		// ShopSign shopSign = new ShopSign(signBlockEntity.getPos(),signText);
+		// if (shopSign.sellerName != "")
+		// 	shopSigns.put(signBlockEntity.getPos().hashCode(), shopSign);
 	}
 
 	/**

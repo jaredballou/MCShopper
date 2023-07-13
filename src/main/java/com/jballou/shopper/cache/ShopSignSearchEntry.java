@@ -5,7 +5,7 @@ import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.gson.*;
 
-import com.jballou.shopper.Shopper;
+import com.jballou.shopper.ShopperOld;
 import com.jballou.shopper.records.ShopSignEntry;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
@@ -65,7 +65,7 @@ public class ShopSignSearchEntry {
       } catch (NoSuchFieldException ex) {
         // skip it
       } catch (IllegalAccessException ex) {
-        Shopper.LOGGER.error("Unable to copy field: {}", f.getName());
+        ShopperOld.LOGGER.error("Unable to copy field: {}", f.getName());
       }
     }
 /*    this.posString = shopSignEntry.posString;
