@@ -41,7 +41,12 @@ public final class ShopList
 		ShopSign oldSign = SIGNS.get(sign.pos);
 		if(oldSign != null && !sign.compare(oldSign))
 		{
+			SIGNS.replace(sign.pos, sign);
 			remove(oldSign);
+		}
+		else
+		{
+			SIGNS.put(sign.pos, sign);
 		}
 		
 		String name = sign.getComparableItemName();
@@ -50,7 +55,6 @@ public final class ShopList
 			ITEMS.put(name, new ItemList());
 		}
 		
-		SIGNS.replace(sign.pos, sign);
 		ITEMS.get(name).add(sign);
 	}
 
@@ -85,7 +89,7 @@ public final class ShopList
 
 	public JsonArray toJson()
 	{
-		ShopperClient.LOG.info("Parsing ShopList");
+		ShopperClient.LOG.info("Parsing ShopList {}, {}", SIGNS.size(), SIGNS.values().size());
 
 		JsonArray arr = new JsonArray();
 		for(ShopSign sign : SIGNS.values())
