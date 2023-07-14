@@ -2,6 +2,7 @@ package com.jballou.shopper.data;
 
 import java.util.Locale;
 
+import com.google.gson.JsonObject;
 import com.jballou.shopper.ShopperClient;
 
 import net.minecraft.block.entity.SignBlockEntity;
@@ -42,5 +43,21 @@ public class ShopSign
 	public boolean compare(ShopSign sign)
 	{
 		return false;
+	}
+
+	public JsonObject toJson()
+	{
+		JsonObject obj = new JsonObject();
+		
+		obj.addProperty("x", pos.getX());
+		obj.addProperty("y", pos.getY());
+		obj.addProperty("z", pos.getZ());
+		obj.addProperty("sellerName", sellerName);
+		obj.addProperty("amount", amount);
+		obj.addProperty("buyPrice", buyPrice);
+		obj.addProperty("sellPrice", sellPrice);
+		obj.addProperty("itemName", itemName);
+
+		return obj;
 	}
 }

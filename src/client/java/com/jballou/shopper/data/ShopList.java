@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import com.google.gson.JsonArray;
+import com.jballou.shopper.ShopperClient;
+
 import net.minecraft.util.Pair;
 import net.minecraft.util.math.BlockPos;
 
@@ -38,15 +41,16 @@ public final class ShopList
 		ShopSign oldSign = SIGNS.get(sign.pos);
 		if(oldSign != null && !sign.compare(oldSign))
 		{
-			SIGNS.replace(sign.pos, sign);
 			remove(oldSign);
 		}
-
+		
 		String name = sign.getComparableItemName();
 		if(!ITEMS.containsKey(name))
 		{
 			ITEMS.put(name, new ItemList());
 		}
+		
+		SIGNS.replace(sign.pos, sign);
 		ITEMS.get(name).add(sign);
 	}
 
@@ -79,13 +83,16 @@ public final class ShopList
 		return result;
 	}
 
-	private void loadJson()
+	public JsonArray toJson()
 	{
+		ShopperClient.LOG.info("Parsing ShopList");
 
-	}
-
-	private void saveJson()
-	{
-
+		JsonArray arr = new JsonArray();
+		for(ShopSign sign : SIGNS.values())
+		{
+			ShopperClient.LOG.info("Parsing sign {}", sign.pos);
+			arr.add(sign.toJson());
+		}
+		return arr;
 	}
 }
