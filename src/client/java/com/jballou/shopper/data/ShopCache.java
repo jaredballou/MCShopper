@@ -68,8 +68,8 @@ public final class ShopCache
 		ShopSign bestSeller = list.signs.get(0);
 		for(ShopSign sign : list.signs)
 		{
-			bestBuyer = sign.buyPrice > bestBuyer.buyPrice ? sign : bestBuyer;
-			bestSeller = sign.sellPrice < bestSeller.sellPrice ? sign : bestSeller;
+			bestBuyer = sign.buyPrice < bestBuyer.buyPrice ? sign : bestBuyer;
+			bestSeller = sign.sellPrice > bestSeller.sellPrice ? sign : bestSeller;
 		}
 
 		result.setLeft(bestBuyer);
