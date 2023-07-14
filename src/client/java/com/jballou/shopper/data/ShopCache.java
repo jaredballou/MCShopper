@@ -35,7 +35,7 @@ public final class ShopCache
 	
 	private static final HashMap<Identifier, ShopList> CACHE = new HashMap<>();
 
-	private static class CacheSerialiser implements JsonSerializer<ShopCache>
+	private static class CacheSerializer implements JsonSerializer<ShopCache>
 	{
 
 		@Override
@@ -55,6 +55,8 @@ public final class ShopCache
 		}
 
 	}
+
+	// private static class CacheDeserializer
 
 	private ShopCache() {}
 
@@ -114,26 +116,27 @@ public final class ShopCache
 	public static void joinListener(ClientPlayNetworkHandler handler, PacketSender sender, MinecraftClient client)
 	{
 		String fname = getFileNameForLevel(client);
-		ShopperClient.LOG.info("{}", fname);
 	}
 
 	public static void disconnectListener(ClientPlayNetworkHandler handler, MinecraftClient client)
 	{
 		String fname = getFileNameForLevel(client);
-		ShopperClient.LOG.info("{}", fname);
 		client.execute(() ->
 		{
 			saveToJson(fname);
 		});
 	}
 
+	private static void loadFromJson(String fname)
+	{
+
+	}
+
 	private static void saveToJson(String fname)
 	{
-				ShopperClient.LOG.info("save you bastard");
-
 		Gson gson = new GsonBuilder()
 			.setPrettyPrinting()
-			.registerTypeAdapter(ShopCache.class, new CacheSerialiser())
+			.registerTypeAdapter(ShopCache.class, new CacheSerializer())
 			.create();
 
 		String path = String.format(Locale.ROOT, "%s/shops.%s.json", ShopperClient.CONFIG_PATH, fname);
