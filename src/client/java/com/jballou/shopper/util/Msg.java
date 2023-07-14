@@ -6,6 +6,7 @@ import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.math.BlockPos;
 
 /**
  * Utility for sending formatted messages to chat from commands.
@@ -18,7 +19,12 @@ public final class Msg
 	private static final Text BEGIN_SCAN = Text.literal("Beginning scan with radius ").formatted(Formatting.WHITE);
 	private static final Text END_SCAN_A = Text.literal("Scan complete. Found ").formatted(Formatting.WHITE);
 	private static final Text END_SCAN_B = Text.literal(" shop signs").formatted(Formatting.WHITE);
-	private static final Text BEGIN_ITEM_SEARCH = Text.literal("Beginning item search for ");
+	private static final Text ITEM_FAIL_BUYER = Text.literal("No buyer found for ").formatted(Formatting.RED);
+	private static final Text ITEM_FAIL_SELLER = Text.literal("No seller found for ").formatted(Formatting.RED);
+	private static final Text ITEM_PRICE_BUYER = Text.literal("Best buy price for ").formatted(Formatting.WHITE);
+	private static final Text ITEM_PRICE_SELLER = Text.literal("Best sell price for ").formatted(Formatting.WHITE);
+	private static final Text ITEM_PRICE_POS = Text.literal(" is at ").formatted(Formatting.WHITE);
+	private static final Text ITEM_PRICE_AMT = Text.literal(" for ").formatted(Formatting.WHITE);
 
 	private static MutableText mkTxt()
 	{
@@ -39,6 +45,26 @@ public final class Msg
 	public static void endScan(CommandContext<FabricClientCommandSource> context, Integer numFound)
 	{
 		MutableText txt = mkTxt().append(END_SCAN_A).append(Text.literal(numFound.toString()).formatted(Formatting.GREEN)).append(END_SCAN_B);
+		context.getSource().sendFeedback(txt);
+	}
+
+	public static void itemSearchFail(CommandContext<FabricClientCommandSource> context, String itemName, boolean isBuyer)
+	{
+		Text msg = isBuyer ? ITEM_FAIL_BUYER : ITEM_FAIL_SELLER;
+		MutableText txt = mkTxt().append(msg).append(Text.literal(itemName).formatted(Formatting.GREEN));
+		context.getSource().sendFeedback(txt);
+	}
+
+	public static void itemSearchResult(CommandContext<FabricClientCommandSource> context, String itemName, BlockPos pos, Integer price, boolean isBuyer)
+	{
+		Text msg = isBuyer ? ITEM_PRICE_BUYER : ITEM_PRICE_SELLER;
+		MutableText txt = mkTxt()
+			.append(msg)
+			.append(Text.literal(itemName).formatted(Formatting.GREEN))
+			.append(ITEM_PRICE_POS)
+			.append(Text.literal(pos.toShortString()).formatted(Formatting.GREEN))
+			.append(ITEM_PRICE_AMT)
+			.append(Text.literal(price.toString()).formatted(Formatting.GOLD));
 		context.getSource().sendFeedback(txt);
 	}
 }

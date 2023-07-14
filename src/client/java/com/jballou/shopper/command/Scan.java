@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.jballou.shopper.data.BuySellParser;
+import com.jballou.shopper.data.ShopCache;
 import com.jballou.shopper.data.ShopSign;
 import com.jballou.shopper.util.Msg;
 import com.mojang.brigadier.CommandDispatcher;
@@ -72,7 +73,7 @@ public final class Scan
 			if(parser.parseSign(sign))
 			{
 				// Msg.info(context, "found a shop sign!");
-				ShopSign ss = new ShopSign(sign, parser.buyPrice, parser.sellPrice, parser.isFrontSide);
+				ShopCache.cache(new ShopSign(sign, parser.buyPrice, parser.sellPrice, parser.isFrontSide));
 				numFound += 1;
 			}
 		}

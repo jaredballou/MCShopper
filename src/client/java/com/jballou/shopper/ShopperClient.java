@@ -5,9 +5,11 @@ import org.slf4j.LoggerFactory;
 
 import com.jballou.shopper.command.FindItem;
 import com.jballou.shopper.command.Scan;
+import com.jballou.shopper.data.ShopCache;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 
 public class ShopperClient implements ClientModInitializer
 {
@@ -20,6 +22,8 @@ public class ShopperClient implements ClientModInitializer
 	{
 		ClientCommandRegistrationCallback.EVENT.register(Scan::listener);
 		ClientCommandRegistrationCallback.EVENT.register(FindItem::listener);
+		ClientPlayConnectionEvents.JOIN.register(ShopCache::joinListener);
+		ClientPlayConnectionEvents.DISCONNECT.register(ShopCache::disconnectListener);
 	}
 	
 }
