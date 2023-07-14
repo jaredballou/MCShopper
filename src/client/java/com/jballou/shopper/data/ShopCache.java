@@ -37,13 +37,13 @@ public final class ShopCache
 
 	private ShopCache() {}
 
-	public static void cache(ShopSign sign)
+	public static void add(ShopSign sign)
 	{
 		ShopSign oldSign = SIGNS.get(sign.pos);
 		if(oldSign != null && !sign.compare(oldSign))
 		{
 			SIGNS.replace(sign.pos, sign);
-			ITEMS.get(oldSign.getComparableItemName()).remove(oldSign);
+			remove(oldSign);
 		}
 
 		String name = sign.getComparableItemName();
@@ -52,6 +52,12 @@ public final class ShopCache
 			ITEMS.put(name, new ItemList());
 		}
 		ITEMS.get(name).add(sign);
+	}
+
+	public static void remove(ShopSign sign)
+	{
+		SIGNS.remove(sign.pos);
+		ITEMS.get(sign.getComparableItemName()).remove(sign);
 	}
 
 	public static Pair<ShopSign, ShopSign> findBestPrices(String itemName)

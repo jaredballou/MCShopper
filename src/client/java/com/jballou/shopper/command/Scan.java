@@ -73,7 +73,7 @@ public final class Scan
 			if(parser.parseSign(sign))
 			{
 				// Msg.info(context, "found a shop sign!");
-				ShopCache.cache(new ShopSign(sign, parser.buyPrice, parser.sellPrice, parser.isFrontSide));
+				ShopCache.add(new ShopSign(sign, parser.buyPrice, parser.sellPrice, parser.isFrontSide));
 				numFound += 1;
 			}
 		}
