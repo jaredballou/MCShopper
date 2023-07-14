@@ -1,6 +1,7 @@
 package com.jballou.shopper.data;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -14,9 +15,12 @@ import java.util.regex.Pattern;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.jballou.shopper.ShopperClient;
@@ -56,7 +60,25 @@ public final class ShopCache
 
 	}
 
-	// private static class CacheDeserializer
+	private static class CacheDeserializer implements JsonDeserializer<ShopCache>
+	{
+
+		@Override
+		public ShopCache deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) 
+			throws JsonParseException 
+		{
+			JsonArray worlds = json.getAsJsonArray();
+			for(JsonElement w : worlds.asList())
+			{
+				JsonObject world = w.getAsJsonObject();
+				Identifier id = new Identifier(world.get("id").getAsString());
+				CACHE.put(id, new ShopList(world.get("signs").getAsJsonArray(), id));
+			}
+
+			// also a little hacky, but whatever
+			return new ShopCache();
+		}
+	}
 
 	private ShopCache() {}
 
@@ -79,6 +101,11 @@ public final class ShopCache
 		{
 			list.remove(sign);
 		}
+	}
+
+	public static void clear()
+	{
+		CACHE.clear();
 	}
 
 	public static Pair<ShopSign, ShopSign> findBestPrices(String itemName)
@@ -116,6 +143,11 @@ public final class ShopCache
 	public static void joinListener(ClientPlayNetworkHandler handler, PacketSender sender, MinecraftClient client)
 	{
 		String fname = getFileNameForLevel(client);
+		client.execute(() ->
+		{
+			clear();
+			loadFromJson(fname);
+		});
 	}
 
 	public static void disconnectListener(ClientPlayNetworkHandler handler, MinecraftClient client)
@@ -124,12 +156,33 @@ public final class ShopCache
 		client.execute(() ->
 		{
 			saveToJson(fname);
+			clear();
 		});
 	}
 
 	private static void loadFromJson(String fname)
 	{
+		Gson gson = new GsonBuilder()
+			.registerTypeAdapter(ShopCache.class, new CacheDeserializer())
+			.create();
 
+		String path = String.format(Locale.ROOT, "%s/shops.%s.json", ShopperClient.CONFIG_PATH, fname);
+		try
+		{
+			if(new File(path).exists())
+			{
+				FileReader reader = new FileReader(path);
+				gson.fromJson(reader, ShopCache.class);
+				reader.close();
+			}
+		}
+		catch(IOException | JsonParseException e)
+		{
+			ShopperClient.LOG.error("Could not read cache {}!", path);
+			ShopperClient.LOG.error(e.getMessage());
+		}
+
+		ShopperClient.LOG.info("Loaded Shopper cache from {}", path);
 	}
 
 	private static void saveToJson(String fname)
@@ -140,8 +193,6 @@ public final class ShopCache
 			.create();
 
 		String path = String.format(Locale.ROOT, "%s/shops.%s.json", ShopperClient.CONFIG_PATH, fname);
-		ShopperClient.LOG.info(path);
-		ShopperClient.LOG.info(fname);
 		try 
 		{
 			if(new File(ShopperClient.CONFIG_PATH).mkdirs())
@@ -157,9 +208,10 @@ public final class ShopCache
 			ShopperClient.LOG.info("Saved Shopper cache to {}", path);
 			writer.close();
 		}
-		catch (IOException | JsonIOException e)
+		catch(IOException | JsonIOException e)
 		{
-			ShopperClient.LOG.warn("Could not save cache {}!", path);
+			ShopperClient.LOG.error("Could not save cache {}!", path);
+			ShopperClient.LOG.error(e.getMessage());
 		}
 	}
 

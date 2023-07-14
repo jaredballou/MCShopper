@@ -7,8 +7,10 @@ import java.util.Locale;
 import java.util.Map;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.jballou.shopper.ShopperClient;
 
+import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 import net.minecraft.util.math.BlockPos;
 
@@ -35,6 +37,17 @@ public final class ShopList
 	private final Map<String, ItemList> ITEMS = new HashMap<>();
 
 	public ShopList() {}
+
+	public ShopList(JsonArray arr, Identifier dimension)
+	{
+		ShopperClient.LOG.info("Loaded list");
+
+		for (JsonElement sign : arr.asList())
+		{
+			ShopperClient.LOG.info("Loading sign into list");
+			add(new ShopSign(sign.getAsJsonObject(), dimension));
+		}
+	}
 
 	public void add(ShopSign sign)
 	{
@@ -89,12 +102,12 @@ public final class ShopList
 
 	public JsonArray toJson()
 	{
-		ShopperClient.LOG.info("Parsing ShopList {}, {}", SIGNS.size(), SIGNS.values().size());
+		// ShopperClient.LOG.info("Parsing ShopList {}, {}", SIGNS.size(), SIGNS.values().size());
 
 		JsonArray arr = new JsonArray();
 		for(ShopSign sign : SIGNS.values())
 		{
-			ShopperClient.LOG.info("Parsing sign {}", sign.pos);
+			// ShopperClient.LOG.info("Parsing sign {}", sign.pos);
 			arr.add(sign.toJson());
 		}
 		return arr;

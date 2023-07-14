@@ -21,8 +21,8 @@ public final class Msg
 	private static final Text END_SCAN_B = Text.literal(" shop signs").formatted(Formatting.WHITE);
 	private static final Text ITEM_FAIL_BUYER = Text.literal("No buyer found for ").formatted(Formatting.RED);
 	private static final Text ITEM_FAIL_SELLER = Text.literal("No seller found for ").formatted(Formatting.RED);
-	private static final Text ITEM_PRICE_BUYER = Text.literal("Best buy price for ").formatted(Formatting.WHITE);
-	private static final Text ITEM_PRICE_SELLER = Text.literal("Best sell price for ").formatted(Formatting.WHITE);
+	private static final Text ITEM_PRICE_BUYER = Text.literal("Best buy for ").formatted(Formatting.WHITE);
+	private static final Text ITEM_PRICE_SELLER = Text.literal("Best sell for ").formatted(Formatting.WHITE);
 	private static final Text ITEM_PRICE_POS = Text.literal(" is at ").formatted(Formatting.WHITE);
 	private static final Text ITEM_PRICE_AMT = Text.literal(" for ").formatted(Formatting.WHITE);
 
@@ -55,14 +55,14 @@ public final class Msg
 		context.getSource().sendFeedback(txt);
 	}
 
-	public static void itemSearchResult(CommandContext<FabricClientCommandSource> context, String itemName, BlockPos pos, Integer price, boolean isBuyer)
+	public static void itemSearchResult(CommandContext<FabricClientCommandSource> context, String itemName, String dimension, BlockPos pos, Integer price, boolean isBuyer)
 	{
 		Text msg = isBuyer ? ITEM_PRICE_BUYER : ITEM_PRICE_SELLER;
 		MutableText txt = mkTxt()
 			.append(msg)
 			.append(Text.literal(itemName).formatted(Formatting.GREEN))
 			.append(ITEM_PRICE_POS)
-			.append(Text.literal(pos.toShortString()).formatted(Formatting.GREEN))
+			.append(Text.literal("(" + dimension + ") " + pos.toShortString()).formatted(Formatting.GREEN))
 			.append(ITEM_PRICE_AMT)
 			.append(Text.literal(price.toString()).formatted(Formatting.GOLD));
 		context.getSource().sendFeedback(txt);

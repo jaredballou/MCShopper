@@ -20,6 +20,18 @@ public class ShopSign
 	public int sellPrice;
 	public String itemName;
 
+	public ShopSign(JsonObject json, Identifier dimension)
+	{
+		pos = new BlockPos(json.get("x").getAsInt(), json.get("y").getAsInt(), json.get("z").getAsInt());
+		sellerName = json.get("sellerName").getAsString();
+		amount = json.get("amount").getAsInt();
+		buyPrice = json.get("buyPrice").getAsInt();
+		sellPrice = json.get("sellPrice").getAsInt();
+		itemName = json.get("itemName").getAsString();
+
+		this.dimension = dimension;
+	}
+
 	public ShopSign(SignBlockEntity sign, int buyPrice, int sellPrice, boolean useFrontSide)
 	{
 		pos = sign.getPos();
