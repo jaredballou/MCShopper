@@ -16,6 +16,8 @@ public final class Msg
 	private Msg() {}
 
 	private static final Text BEGIN_SCAN = Text.literal("Beginning scan with radius ").formatted(Formatting.WHITE);
+	private static final Text END_SCAN_A = Text.literal("Scan complete. Found ").formatted(Formatting.WHITE);
+	private static final Text END_SCAN_B = Text.literal(" shop signs").formatted(Formatting.WHITE);
 	private static final Text BEGIN_ITEM_SEARCH = Text.literal("Beginning item search for ");
 
 	private static MutableText mkTxt()
@@ -31,6 +33,12 @@ public final class Msg
 	public static void beginScan(CommandContext<FabricClientCommandSource> context, Integer radius)
 	{
 		MutableText txt = mkTxt().append(BEGIN_SCAN).append(Text.literal(radius.toString()).formatted(Formatting.GREEN));
+		context.getSource().sendFeedback(txt);
+	}
+
+	public static void endScan(CommandContext<FabricClientCommandSource> context, Integer numFound)
+	{
+		MutableText txt = mkTxt().append(END_SCAN_A).append(Text.literal(numFound.toString()).formatted(Formatting.GREEN)).append(END_SCAN_B);
 		context.getSource().sendFeedback(txt);
 	}
 }
