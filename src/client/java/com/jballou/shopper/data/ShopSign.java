@@ -6,11 +6,13 @@ import com.jballou.shopper.ShopperClient;
 
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.block.entity.SignText;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 
 public class ShopSign
 {
 	public BlockPos pos;
+	public Identifier dimension;
 	public String sellerName;
 	public int amount;
 	public int buyPrice;
@@ -20,6 +22,7 @@ public class ShopSign
 	public ShopSign(SignBlockEntity sign, int buyPrice, int sellPrice, boolean useFrontSide)
 	{
 		pos = sign.getPos();
+		dimension = sign.getWorld().getDimensionKey().getValue();
 
 		SignText text = sign.getText(useFrontSide);
 		sellerName = text.getMessage(0, false).getString();
