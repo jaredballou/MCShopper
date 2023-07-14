@@ -23,7 +23,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-import com.jballou.shopper.ShopperClient;
+import com.jballou.shopper.Shopper;
 
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.client.MinecraftClient;
@@ -145,7 +145,6 @@ public final class ShopCache
 		String fname = getFileNameForLevel(client);
 		client.execute(() ->
 		{
-			clear();
 			loadFromJson(fname);
 		});
 	}
@@ -166,7 +165,7 @@ public final class ShopCache
 			.registerTypeAdapter(ShopCache.class, new CacheDeserializer())
 			.create();
 
-		String path = String.format(Locale.ROOT, "%s/shops.%s.json", ShopperClient.CONFIG_PATH, fname);
+		String path = String.format(Locale.ROOT, "%s/shops.%s.json", Shopper.CONFIG_PATH, fname);
 		try
 		{
 			if(new File(path).exists())
@@ -178,11 +177,11 @@ public final class ShopCache
 		}
 		catch(IOException | JsonParseException e)
 		{
-			ShopperClient.LOG.error("Could not read cache {}!", path);
-			ShopperClient.LOG.error(e.getMessage());
+			Shopper.LOG.error("Could not read cache {}!", path);
+			Shopper.LOG.error(e.getMessage());
 		}
 
-		ShopperClient.LOG.info("Loaded Shopper cache from {}", path);
+		Shopper.LOG.info("Loaded Shopper cache from {}", path);
 	}
 
 	private static void saveToJson(String fname)
@@ -192,12 +191,12 @@ public final class ShopCache
 			.registerTypeAdapter(ShopCache.class, new CacheSerializer())
 			.create();
 
-		String path = String.format(Locale.ROOT, "%s/shops.%s.json", ShopperClient.CONFIG_PATH, fname);
+		String path = String.format(Locale.ROOT, "%s/shops.%s.json", Shopper.CONFIG_PATH, fname);
 		try 
 		{
-			if(new File(ShopperClient.CONFIG_PATH).mkdirs())
+			if(new File(Shopper.CONFIG_PATH).mkdirs())
 			{
-				ShopperClient.LOG.info("Created dir {}", ShopperClient.CONFIG_PATH);
+				Shopper.LOG.info("Created dir {}", Shopper.CONFIG_PATH);
 			}
 
 			FileWriter writer = new FileWriter(path);
@@ -205,13 +204,13 @@ public final class ShopCache
 			// new is a bit hacky here, not sure how to serialise a static class
 			gson.toJson(new ShopCache(), writer);
 			writer.flush();
-			ShopperClient.LOG.info("Saved Shopper cache to {}", path);
+			Shopper.LOG.info("Saved Shopper cache to {}", path);
 			writer.close();
 		}
 		catch(IOException | JsonIOException e)
 		{
-			ShopperClient.LOG.error("Could not save cache {}!", path);
-			ShopperClient.LOG.error(e.getMessage());
+			Shopper.LOG.error("Could not save cache {}!", path);
+			Shopper.LOG.error(e.getMessage());
 		}
 	}
 

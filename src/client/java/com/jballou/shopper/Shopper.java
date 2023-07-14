@@ -14,7 +14,7 @@ import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallba
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.minecraft.client.MinecraftClient;
 
-public class ShopperClient implements ClientModInitializer
+public class Shopper implements ClientModInitializer
 {
 	public static final String MOD_ID = "shopper";
 	public static final Logger LOG = LoggerFactory.getLogger(MOD_ID);

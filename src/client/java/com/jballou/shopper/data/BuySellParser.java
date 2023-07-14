@@ -3,8 +3,6 @@ package com.jballou.shopper.data;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.jballou.shopper.ShopperClient;
-
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.text.Text;
 
@@ -32,8 +30,6 @@ public final class BuySellParser
 	private boolean parse(Text text, boolean side)
 	{
 		Matcher matcher = REGEX_PATTERN.matcher(text.getString());
-
-		ShopperClient.LOG.info("\tParsing str: {}", text.getString());
 
 		if(!matcher.matches() || (matcher.group(2) == null && matcher.group(5) == null))
 		{

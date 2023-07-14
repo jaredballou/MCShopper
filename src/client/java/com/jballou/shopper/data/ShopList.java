@@ -8,7 +8,6 @@ import java.util.Map;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.jballou.shopper.ShopperClient;
 
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
@@ -40,11 +39,8 @@ public final class ShopList
 
 	public ShopList(JsonArray arr, Identifier dimension)
 	{
-		ShopperClient.LOG.info("Loaded list");
-
 		for (JsonElement sign : arr.asList())
 		{
-			ShopperClient.LOG.info("Loading sign into list");
 			add(new ShopSign(sign.getAsJsonObject(), dimension));
 		}
 	}

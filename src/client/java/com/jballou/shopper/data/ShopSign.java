@@ -3,7 +3,6 @@ package com.jballou.shopper.data;
 import java.util.Locale;
 
 import com.google.gson.JsonObject;
-import com.jballou.shopper.ShopperClient;
 
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.block.entity.SignText;
@@ -43,8 +42,6 @@ public class ShopSign
 		this.buyPrice = buyPrice;
 		this.sellPrice = sellPrice;
 		itemName = text.getMessage(3, useFrontSide).getString();
-
-		ShopperClient.LOG.info("New sign: {} {} {} {}", sellerName, amount, buyPrice, sellPrice);
 	}
 
 	public String getComparableItemName()
