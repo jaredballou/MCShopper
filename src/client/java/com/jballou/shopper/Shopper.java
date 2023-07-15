@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.jballou.shopper.command.FindItem;
+import com.jballou.shopper.command.ListShops;
 import com.jballou.shopper.command.Scan;
 import com.jballou.shopper.data.ShopCache;
 
@@ -25,6 +26,7 @@ public class Shopper implements ClientModInitializer
 	{
 		ClientCommandRegistrationCallback.EVENT.register(Scan::listener);
 		ClientCommandRegistrationCallback.EVENT.register(FindItem::listener);
+		ClientCommandRegistrationCallback.EVENT.register(ListShops::listener);
 		ClientPlayConnectionEvents.JOIN.register(ShopCache::joinListener);
 		ClientPlayConnectionEvents.DISCONNECT.register(ShopCache::disconnectListener);
 	}

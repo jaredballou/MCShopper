@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -151,6 +152,14 @@ public final class ShopCache
 			}
 		}
 		return result;
+	}
+
+	public static void populateShopSet(Set<ShopSign> set, String itemName)
+	{
+		for(WorldShopList shopList : CACHE.values())
+		{
+			shopList.populateShopSet(set, itemName);
+		}
 	}
 
 	public static void joinListener(ClientPlayNetworkHandler handler, PacketSender sender, MinecraftClient client)

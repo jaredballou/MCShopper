@@ -1,5 +1,7 @@
 package com.jballou.shopper.util;
 
+import java.util.Set;
+
 import com.jballou.shopper.data.ShopSign;
 import com.mojang.brigadier.context.CommandContext;
 
@@ -21,10 +23,14 @@ public final class Msg
 	private static final Text END_SCAN_B = Text.literal(" shop signs").formatted(Formatting.WHITE);
 	private static final Text ITEM_FAIL_BUYER = Text.literal("No buyer found for ").formatted(Formatting.RED);
 	private static final Text ITEM_FAIL_SELLER = Text.literal("No seller found for ").formatted(Formatting.RED);
-	private static final Text ITEM_PRICE_BUYER = Text.literal("Best buyer  for ").formatted(Formatting.WHITE);
+	private static final Text ITEM_PRICE_BUYER = Text.literal("Best buyer for ").formatted(Formatting.WHITE);
 	private static final Text ITEM_PRICE_SELLER = Text.literal("Best seller for ").formatted(Formatting.WHITE);
 	private static final Text ITEM_PRICE_POS = Text.literal(" is at ").formatted(Formatting.WHITE);
 	private static final Text ITEM_PRICE_AMT = Text.literal(" for ").formatted(Formatting.WHITE);
+	private static final Text BEGIN_LIST = Text.literal("Shop Listings for ").formatted(Formatting.WHITE);
+	private static final Text AMOUNT = Text.literal(" amount: ").formatted(Formatting.WHITE);
+	private static final Text BUY_FOR = Text.literal(" buy: ").formatted(Formatting.WHITE);
+	private static final Text SELL_FOR = Text.literal(" sell: ").formatted(Formatting.WHITE);
 
 	private static MutableText mkTxt()
 	{
@@ -69,6 +75,23 @@ public final class Msg
 			.append(Text.literal(price.toString()).formatted(Formatting.GOLD))
 			.append(Text.literal(" for " + shop.amount + " ").formatted(Formatting.WHITE))
 			.append(Text.literal(shop.itemName + plurality).formatted(Formatting.GREEN));
+		context.getSource().sendFeedback(txt);
+	}
+
+	public static void shopList(CommandContext<FabricClientCommandSource> context, String itemName, Set<ShopSign> set)
+	{
+		MutableText txt = mkTxt().append(BEGIN_LIST).append(Text.literal(":\n").formatted(Formatting.WHITE));
+		for(ShopSign sign : set)
+		{
+			txt.append(Text.literal("(" + sign.dimension.getPath() + ") " + sign.pos.toShortString()).formatted(Formatting.GREEN))
+			.append(Text.literal(" " + sign.sellerName).formatted(Formatting.AQUA))
+			.append(AMOUNT)
+			.append(Text.literal(Integer.toString(sign.amount)).formatted(Formatting.WHITE))
+			.append(BUY_FOR)
+			.append(Text.literal(Float.toString(sign.buyPrice)).formatted(Formatting.GOLD))
+			.append(SELL_FOR)
+			.append(Text.literal(Float.toString(sign.sellPrice) + "\n").formatted(Formatting.GOLD));
+		}
 		context.getSource().sendFeedback(txt);
 	}
 }

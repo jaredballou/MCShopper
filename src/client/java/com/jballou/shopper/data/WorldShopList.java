@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -195,6 +196,21 @@ public final class WorldShopList
 		}
 
 		return result;
+	}
+
+	public void populateShopSet(Set<ShopSign> set, String itemName)
+	{
+		ItemList itemList = ITEMS.get(itemName);
+		if(itemList != null)
+		{
+			for (ShopSign sign : itemList.buyers)
+			{
+				if(!set.contains(sign))
+				{
+					set.add(sign);
+				}
+			}
+		}
 	}
 
 	public JsonArray toJson()
