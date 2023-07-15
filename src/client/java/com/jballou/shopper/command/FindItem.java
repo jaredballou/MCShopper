@@ -44,7 +44,7 @@ public final class FindItem
 
 		if(buyer != null)
 		{
-			Msg.itemSearchResult(context, name, buyer.sellerName, buyer.dimension.getPath(), buyer.pos, buyer.buyPrice, true);
+			Msg.itemSearchResult(context, buyer, buyer.buyPrice, true);
 		}
 		else
 		{
@@ -53,7 +53,7 @@ public final class FindItem
 
 		if(seller != null)
 		{
-			Msg.itemSearchResult(context, name, seller.sellerName, seller.dimension.getPath(), seller.pos, seller.sellPrice, false);
+			Msg.itemSearchResult(context, seller, seller.sellPrice, false);
 		}
 		else
 		{

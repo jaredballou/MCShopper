@@ -1,12 +1,12 @@
 package com.jballou.shopper.util;
 
+import com.jballou.shopper.data.ShopSign;
 import com.mojang.brigadier.context.CommandContext;
 
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.math.BlockPos;
 
 /**
  * Utility for sending formatted messages to chat from commands.
@@ -21,8 +21,8 @@ public final class Msg
 	private static final Text END_SCAN_B = Text.literal(" shop signs").formatted(Formatting.WHITE);
 	private static final Text ITEM_FAIL_BUYER = Text.literal("No buyer found for ").formatted(Formatting.RED);
 	private static final Text ITEM_FAIL_SELLER = Text.literal("No seller found for ").formatted(Formatting.RED);
-	private static final Text ITEM_PRICE_BUYER = Text.literal("Best buy for ").formatted(Formatting.WHITE);
-	private static final Text ITEM_PRICE_SELLER = Text.literal("Best sell for ").formatted(Formatting.WHITE);
+	private static final Text ITEM_PRICE_BUYER = Text.literal("Best buyer  for ").formatted(Formatting.WHITE);
+	private static final Text ITEM_PRICE_SELLER = Text.literal("Best seller for ").formatted(Formatting.WHITE);
 	private static final Text ITEM_PRICE_POS = Text.literal(" is at ").formatted(Formatting.WHITE);
 	private static final Text ITEM_PRICE_AMT = Text.literal(" for ").formatted(Formatting.WHITE);
 
@@ -55,17 +55,20 @@ public final class Msg
 		context.getSource().sendFeedback(txt);
 	}
 
-	public static void itemSearchResult(CommandContext<FabricClientCommandSource> context, String itemName, String sellerName, String dimension, BlockPos pos, Float price, boolean isBuyer)
+	public static void itemSearchResult(CommandContext<FabricClientCommandSource> context, ShopSign shop, Float price, boolean isBuyer)
 	{
 		Text msg = isBuyer ? ITEM_PRICE_BUYER : ITEM_PRICE_SELLER;
+		String plurality = shop.amount > 1 ? "s" : "";
 		MutableText txt = mkTxt()
 			.append(msg)
-			.append(Text.literal(itemName).formatted(Formatting.GREEN))
+			.append(Text.literal(shop.itemName).formatted(Formatting.GREEN))
 			.append(ITEM_PRICE_POS)
-			.append(Text.literal(sellerName + " shop "))
-			.append(Text.literal("(" + dimension + ") " + pos.toShortString()).formatted(Formatting.GREEN))
+			.append(Text.literal(shop.sellerName + " shop ").formatted(Formatting.AQUA))
+			.append(Text.literal("(" + shop.dimension.getPath() + ")\n             " + shop.pos.toShortString()).formatted(Formatting.GREEN))
 			.append(ITEM_PRICE_AMT)
-			.append(Text.literal(price.toString()).formatted(Formatting.GOLD));
+			.append(Text.literal(price.toString()).formatted(Formatting.GOLD))
+			.append(Text.literal(" for " + shop.amount + " ").formatted(Formatting.WHITE))
+			.append(Text.literal(shop.itemName + plurality).formatted(Formatting.GREEN));
 		context.getSource().sendFeedback(txt);
 	}
 }

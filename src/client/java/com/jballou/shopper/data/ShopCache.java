@@ -158,6 +158,7 @@ public final class ShopCache
 		String fname = getFileNameForLevel(client);
 		client.execute(() ->
 		{
+			clear();
 			loadFromJson(fname);
 		});
 	}
@@ -168,7 +169,6 @@ public final class ShopCache
 		client.execute(() ->
 		{
 			saveToJson(fname);
-			clear();
 		});
 	}
 
