@@ -78,10 +78,14 @@ public final class Msg
 		context.getSource().sendFeedback(txt);
 	}
 
-	public static void shopList(CommandContext<FabricClientCommandSource> context, String itemName, Set<ShopSign> set)
+	public static void shopList(CommandContext<FabricClientCommandSource> context, String itemName, Set<ShopSign> signs)
 	{
-		MutableText txt = mkTxt().append(BEGIN_LIST).append(Text.literal(":\n").formatted(Formatting.WHITE));
-		for(ShopSign sign : set)
+		MutableText txt = mkTxt()
+			.append(BEGIN_LIST)
+			.append(Text.literal(itemName).formatted(Formatting.GREEN))
+			.append(Text.literal(":\n").formatted(Formatting.WHITE));
+
+		for(ShopSign sign : signs)
 		{
 			txt.append(Text.literal("(" + sign.dimension.getPath() + ") " + sign.pos.toShortString()).formatted(Formatting.GREEN))
 			.append(Text.literal(" " + sign.sellerName).formatted(Formatting.AQUA))
