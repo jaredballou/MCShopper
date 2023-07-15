@@ -186,6 +186,11 @@ public final class ShopCache
 				FileReader reader = new FileReader(path);
 				gson.fromJson(reader, ShopCache.class);
 				reader.close();
+				Shopper.LOG.info("Loaded Shopper cache from {}", path);
+			}
+			else
+			{
+				Shopper.LOG.info("No Shopper cache found for {}", path);
 			}
 		}
 		catch(IOException | JsonParseException e)
@@ -194,7 +199,6 @@ public final class ShopCache
 			Shopper.LOG.error(e.getMessage());
 		}
 
-		Shopper.LOG.info("Loaded Shopper cache from {}", path);
 	}
 
 	private static void saveToJson(String fname)
