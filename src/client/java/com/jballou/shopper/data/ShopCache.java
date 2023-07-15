@@ -31,13 +31,19 @@ import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 import net.minecraft.util.WorldSavePath;
+import net.minecraft.util.math.BlockPos;
 
+/**
+ * The master cache structure.
+ * This class is entirely static.
+ * Tracks a lists of shops for each world.
+ */
 public final class ShopCache
 {
 	private static String REGEX_STR = ".*[\\\\/](.+)[\\\\/].+\\.dat";
 	private static final Pattern REGEX_PATTERN = Pattern.compile(REGEX_STR);
 
-	private static final HashMap<Identifier, ShopList> CACHE = new HashMap<>();
+	private static final HashMap<Identifier, WorldShopList> CACHE = new HashMap<>();
 
 	private static class CacheSerializer implements JsonSerializer<ShopCache>
 	{
@@ -47,7 +53,7 @@ public final class ShopCache
 		{
 			JsonArray worlds = new JsonArray();
 
-			for(Map.Entry<Identifier, ShopList> entry : CACHE.entrySet())
+			for(Map.Entry<Identifier, WorldShopList> entry : CACHE.entrySet())
 			{
 				JsonObject world = new JsonObject();
 				world.addProperty("id", entry.getKey().toString());
@@ -72,7 +78,7 @@ public final class ShopCache
 			{
 				JsonObject world = w.getAsJsonObject();
 				Identifier id = new Identifier(world.get("id").getAsString());
-				CACHE.put(id, new ShopList(world.get("signs").getAsJsonArray(), id));
+				CACHE.put(id, new WorldShopList(world.get("signs").getAsJsonArray(), id));
 			}
 
 			// also a little hacky, but whatever
@@ -84,10 +90,10 @@ public final class ShopCache
 
 	public static void add(ShopSign sign)
 	{
-		ShopList list = CACHE.get(sign.dimension);
+		WorldShopList list = CACHE.get(sign.dimension);
 		if(list == null)
 		{
-			CACHE.put(sign.dimension, new ShopList());
+			CACHE.put(sign.dimension, new WorldShopList());
 			list = CACHE.get(sign.dimension);
 		}
 
@@ -96,7 +102,7 @@ public final class ShopCache
 
 	public static void remove(ShopSign sign)
 	{
-		ShopList list = CACHE.get(sign.dimension);
+		WorldShopList list = CACHE.get(sign.dimension);
 		if(list != null)
 		{
 			list.remove(sign);
@@ -108,12 +114,19 @@ public final class ShopCache
 		CACHE.clear();
 	}
 
-	public static Pair<ShopSign, ShopSign> findBestPrices(String itemName)
+	/**
+	 * Iterates through the WorldShopLists, finding the best value price from all
+	 * possible Worlds
+	 * @param itemName
+	 * @param playerPos
+	 * @return
+	 */
+	public static Pair<ShopSign, ShopSign> findBestPrices(String itemName, BlockPos playerPos)
 	{
 		Pair<ShopSign, ShopSign> result = new Pair<>(null, null);
-		for (ShopList list : CACHE.values())
+		for (WorldShopList list : CACHE.values())
 		{
-			Pair<ShopSign, ShopSign> best = list.findBestPrices(itemName);
+			Pair<ShopSign, ShopSign> best = list.findBestPrices(itemName, playerPos);
 
 			if(result.getLeft() == null)
 			{

@@ -44,6 +44,16 @@ public class ShopSign
 		itemName = text.getMessage(3, useFrontSide).getString();
 	}
 
+	public float getBuyValue()
+	{
+		return buyPrice / amount;
+	}
+
+	public float getSellValue()
+	{
+		return sellPrice / amount;
+	}
+
 	public String getComparableItemName()
 	{
 		return itemName.toLowerCase(Locale.ROOT);

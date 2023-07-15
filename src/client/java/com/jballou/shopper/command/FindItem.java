@@ -13,6 +13,7 @@ import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.util.Pair;
+import net.minecraft.util.math.BlockPos;
 
 public final class FindItem
 {
@@ -36,7 +37,7 @@ public final class FindItem
 	private static void findPrices(CommandContext<FabricClientCommandSource> context)
 	{
 		String name = StringArgumentType.getString(context, "itemName");
-		Pair<ShopSign, ShopSign> signs = ShopCache.findBestPrices(name.toLowerCase(Locale.ROOT));
+		Pair<ShopSign, ShopSign> signs = ShopCache.findBestPrices(name.toLowerCase(Locale.ROOT), BlockPos.ofFloored(context.getSource().getPosition()));
 
 		ShopSign buyer = signs.getLeft();
 		ShopSign seller = signs.getRight();
