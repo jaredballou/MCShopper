@@ -55,13 +55,14 @@ public final class Msg
 		context.getSource().sendFeedback(txt);
 	}
 
-	public static void itemSearchResult(CommandContext<FabricClientCommandSource> context, String itemName, String dimension, BlockPos pos, Integer price, boolean isBuyer)
+	public static void itemSearchResult(CommandContext<FabricClientCommandSource> context, String itemName, String sellerName, String dimension, BlockPos pos, Float price, boolean isBuyer)
 	{
 		Text msg = isBuyer ? ITEM_PRICE_BUYER : ITEM_PRICE_SELLER;
 		MutableText txt = mkTxt()
 			.append(msg)
 			.append(Text.literal(itemName).formatted(Formatting.GREEN))
 			.append(ITEM_PRICE_POS)
+			.append(Text.literal(sellerName + " shop "))
 			.append(Text.literal("(" + dimension + ") " + pos.toShortString()).formatted(Formatting.GREEN))
 			.append(ITEM_PRICE_AMT)
 			.append(Text.literal(price.toString()).formatted(Formatting.GOLD));

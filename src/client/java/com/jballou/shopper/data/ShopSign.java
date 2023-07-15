@@ -15,8 +15,8 @@ public class ShopSign
 	public Identifier dimension;
 	public String sellerName;
 	public int amount;
-	public int buyPrice;
-	public int sellPrice;
+	public float buyPrice;
+	public float sellPrice;
 	public String itemName;
 
 	public ShopSign(JsonObject json, Identifier dimension)
@@ -24,14 +24,14 @@ public class ShopSign
 		pos = new BlockPos(json.get("x").getAsInt(), json.get("y").getAsInt(), json.get("z").getAsInt());
 		sellerName = json.get("sellerName").getAsString();
 		amount = json.get("amount").getAsInt();
-		buyPrice = json.get("buyPrice").getAsInt();
-		sellPrice = json.get("sellPrice").getAsInt();
+		buyPrice = json.get("buyPrice").getAsFloat();
+		sellPrice = json.get("sellPrice").getAsFloat();
 		itemName = json.get("itemName").getAsString();
 
 		this.dimension = dimension;
 	}
 
-	public ShopSign(SignBlockEntity sign, int buyPrice, int sellPrice, boolean useFrontSide)
+	public ShopSign(SignBlockEntity sign, float buyPrice, float sellPrice, boolean useFrontSide)
 	{
 		pos = sign.getPos();
 		dimension = sign.getWorld().getDimensionKey().getValue();
@@ -57,7 +57,7 @@ public class ShopSign
 	public JsonObject toJson()
 	{
 		JsonObject obj = new JsonObject();
-		
+
 		obj.addProperty("x", pos.getX());
 		obj.addProperty("y", pos.getY());
 		obj.addProperty("z", pos.getZ());

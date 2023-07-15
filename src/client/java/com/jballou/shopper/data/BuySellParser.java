@@ -16,8 +16,8 @@ public final class BuySellParser
 	private static final String REGEX_STR = "(B ([0-9.]+))?[ ]*(:)?[ ]*(([0-9.]+) S)?";
 	private static final Pattern REGEX_PATTERN = Pattern.compile(REGEX_STR);
 
-	public int buyPrice = -1;
-	public int sellPrice = -1;
+	public float buyPrice = -1;
+	public float sellPrice = -1;
 	public boolean isFrontSide = false;
 
 	public BuySellParser() {}
@@ -40,8 +40,8 @@ public final class BuySellParser
 		String sell = matcher.group(5);
 		isFrontSide = side;
 
-		buyPrice = buy != null ? Integer.parseInt(buy) : -1;
-		sellPrice = sell != null ? Integer.parseInt(sell) : -1;
+		buyPrice = buy != null ? Float.parseFloat(buy) : -1;
+		sellPrice = sell != null ? Float.parseFloat(sell) : -1;
 
 		return true;
 	}

@@ -36,7 +36,7 @@ public final class ShopCache
 {
 	private static String REGEX_STR = ".*[\\\\/](.+)[\\\\/].+\\.dat";
 	private static final Pattern REGEX_PATTERN = Pattern.compile(REGEX_STR);
-	
+
 	private static final HashMap<Identifier, ShopList> CACHE = new HashMap<>();
 
 	private static class CacheSerializer implements JsonSerializer<ShopCache>
@@ -46,7 +46,7 @@ public final class ShopCache
 		public JsonElement serialize(ShopCache cache, Type typeOfSrc, JsonSerializationContext context)
 		{
 			JsonArray worlds = new JsonArray();
-			
+
 			for(Map.Entry<Identifier, ShopList> entry : CACHE.entrySet())
 			{
 				JsonObject world = new JsonObject();
@@ -64,8 +64,8 @@ public final class ShopCache
 	{
 
 		@Override
-		public ShopCache deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) 
-			throws JsonParseException 
+		public ShopCache deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+			throws JsonParseException
 		{
 			JsonArray worlds = json.getAsJsonArray();
 			for(JsonElement w : worlds.asList())
@@ -192,7 +192,7 @@ public final class ShopCache
 			.create();
 
 		String path = String.format(Locale.ROOT, "%s/shops.%s.json", Shopper.CONFIG_PATH, fname);
-		try 
+		try
 		{
 			if(new File(Shopper.CONFIG_PATH).mkdirs())
 			{
@@ -200,7 +200,7 @@ public final class ShopCache
 			}
 
 			FileWriter writer = new FileWriter(path);
-			
+
 			// new is a bit hacky here, not sure how to serialise a static class
 			gson.toJson(new ShopCache(), writer);
 			writer.flush();
@@ -226,7 +226,7 @@ public final class ShopCache
 				return matcher.group(1);
 			}
 		}
-		
+
 		return client.getCurrentServerEntry().address;
 	}
 }

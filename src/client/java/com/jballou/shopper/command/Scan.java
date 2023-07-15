@@ -68,7 +68,7 @@ public final class Scan
 		BuySellParser parser = new BuySellParser();
 		int numFound = 0;
 		for (SignBlockEntity sign : signs)
-		{ 
+		{
 			// ShopperClient.LOG.info("{}: {}", n, sign.getPos().toShortString());
 			if(parser.parseSign(sign))
 			{
